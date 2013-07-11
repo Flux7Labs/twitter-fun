@@ -3,44 +3,45 @@ package com.flux7.tweetsentiment;
 import java.io.*;
 import java.util.*;
 
-import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 
-public class TweetScorer extends Mapper<LongWritable,Text,Text,FloatWritable>{
+
+public class TweetScorer {
   
   private Map<String,Integer> emotionScore = new HashMap<String,Integer>();
   
   public TweetScorer() throws IOException{
-    super();
+    
     //Read the file and store the values as a Map
     
-    
-    FileReader reader = new FileReader("/host/linux_workspace/twitter-fun/tweet-sentiment/AFINN-111.txt");
+    //TODO : change this path to a configurable one. 
+    FileReader reader = new FileReader("AFINN-111.txt");
     BufferedReader br = new BufferedReader(reader);
     String strLine;
     while( (strLine = br.readLine()) != null){
-      String[] wordTokens = strLine.split(" ");
+      System.out.println( strLine);
+      String[] wordTokens = strLine.split("\t");
       emotionScore.put(wordTokens[0], Integer.parseInt(wordTokens[1]));
     }
     
   }
   
-  @Override
-  public void map(LongWritable key, Text value, 
-            Context context) throws IOException, InterruptedException {
-    
-    //
-    Gson gson = new Gson();
-    String text = gson.fromJson(value.toString(), String.class);
-  }
   
-  private float getScore( String text){
-    float score = 0;
-    //String[] rawWords = text.toLowerCase().split(" ");
-    StringTokenizer tokenizer = new StringTokenizer(text.toLowerCase());
+  public float getScore( String text){
+    float score = 0F;
+    String tweetText = null;
+    try {
+      tweetText = getTweetText( text);
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    if( tweetText != null){
+      StringTokenizer tokenizer = new StringTokenizer(tweetText.toLowerCase());
     int emotionSum = 0;
     int numEmotions = 0;
     while(tokenizer.hasMoreTokens() ){
@@ -59,10 +60,43 @@ public class TweetScorer extends Mapper<LongWritable,Text,Text,FloatWritable>{
       score = (float)emotionSum/numEmotions;
     }
     
+    }
+    
     return score;
   }
   
   
+  public String getTweetText( String text) throws ParseException{
+    String tweetText = null;
+    JSONParser parser=new JSONParser();
+    Object obj = parser.parse(text);
+    JSONObject jObj=(JSONObject)obj;
+    tweetText = (String)jObj.get("text");
+    return tweetText;
+  }
+  
+  
+  public static void main( String[] args){
+    try {
+      TweetScorer ts = new TweetScorer();
+      FileReader fr = new FileReader( "sample.txt");
+      BufferedReader br = new BufferedReader(fr);
+      String line;
+      while( ( line = br.readLine())!= null){
+        String tweet = ts.getTweetText(line);
+        System.out.println(tweet);
+        float score = ts.getScore(line);
+        System.out.println( "Score is: " + score);
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+  }
   
 
 }
