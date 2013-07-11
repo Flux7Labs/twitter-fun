@@ -76,27 +76,7 @@ public class TweetScorer {
   }
   
   
-  public static void main( String[] args){
-    try {
-      TweetScorer ts = new TweetScorer();
-      FileReader fr = new FileReader( "sample.txt");
-      BufferedReader br = new BufferedReader(fr);
-      String line;
-      while( ( line = br.readLine())!= null){
-        String tweet = ts.getTweetText(line);
-        System.out.println(tweet);
-        float score = ts.getScore(line);
-        System.out.println( "Score is: " + score);
-      }
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    
-  }
+
   
 
 }
