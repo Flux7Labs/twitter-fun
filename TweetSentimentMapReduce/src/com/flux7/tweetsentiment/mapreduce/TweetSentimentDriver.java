@@ -4,6 +4,7 @@ package com.flux7.tweetsentiment.mapreduce;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.IntWritable;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -35,10 +36,11 @@ public class TweetSentimentDriver extends Configured implements Tool{
     
     job.setMapperClass(TweetSentimentMapper.class);
     job.setReducerClass(TweetSentimentReducer.class);
-    job.setMapOutputKeyClass(FloatWritable.class);
-    job.setOutputKeyClass(FloatWritable.class);
-    job.setOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(Text.class);
+    job.setMapOutputKeyClass(IntWritable.class);
+    job.setMapOutputValueClass(TweetScoreWrapper.class);
+    job.setOutputKeyClass(IntWritable.class);
+    job.setOutputValueClass(TweetScoreWrapper.class);
+    
     MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class,FloatWritable.class, Text.class);
     
     FileInputFormat.addInputPath(job, new Path( args[ 0]));
