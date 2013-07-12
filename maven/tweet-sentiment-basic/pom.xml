@@ -41,7 +41,7 @@
 						<appendAssemblyId>false</appendAssemblyId>
 						<archive>
 						      <manifest>
-						        <mainClass>com.flux7.TweetBasic</mainClass>
+						        <mainClass>com.flux7.TweetSentimentBasic</mainClass>
 						      </manifest>
 						    </archive>
 						<descriptorRefs>
