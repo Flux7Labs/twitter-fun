@@ -9,6 +9,8 @@
 	<modules>
 		<module>tweet-commons</module>
 		<module>tweet-sentiment-storm</module>		
+		<module>tweet-sentiment-basic</module>
+		<module>tweet-sentiment-hadoop</module>
 	</modules>
 
 
