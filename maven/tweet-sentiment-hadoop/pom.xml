@@ -59,7 +59,7 @@
 						<appendAssemblyId>false</appendAssemblyId>
 						<archive>
 						      <manifest>
-						        <mainClass>com.flux7.TweetSentimentDriver</mainClass>
+						        <mainClass>com.flux7.mapreduce.TweetSentimentDriver</mainClass>
 						      </manifest>
 						    </archive>
 						<descriptorRefs>
