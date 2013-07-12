@@ -14,21 +14,29 @@
     <relativePath>../</relativePath>
   </parent>
 
- 
+ <properties>
+		<slf4j.version>1.5.8</slf4j.version>
+	</properties>
   <dependencies>
     <dependency>
       <groupId>com.flux7</groupId>
       <artifactId>tweet-commons</artifactId>
       <version>0.0.1-SNAPSHOT</version>
-      <!-- <scope>system</scope>
-      <systemPath>/host/linux_workspace/twitter-fun/maven/tweet-sentiment-hadoop/jars</systemPath>-->
     </dependency>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-core</artifactId>
       <version>1.1.2</version>
-
     </dependency>
   </dependencies>
 
@@ -40,9 +48,33 @@
         <version>2.5.1</version>
         <configuration>
           <source>1.6</source>
-          <target>1.5</target>
+          <target>1.6</target>
         </configuration>
       </plugin>
+			<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<finalName>storm-tweet-sentiment-${project.version}</finalName>
+						<appendAssemblyId>false</appendAssemblyId>
+						<archive>
+						      <manifest>
+						        <mainClass>com.flux7.TweetSentimentDriver</mainClass>
+						      </manifest>
+						    </archive>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+					<executions>
+						<execution>
+							<id>make-assembly</id> <!-- this is used for inheritance merges -->
+							<phase>package</phase> <!-- bind to the packaging phase -->
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
     </plugins>
   </build>
 </project>
