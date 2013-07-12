@@ -1,7 +1,7 @@
 /**
  * Copyright @Flux7
  */
-package com.flux7.bolts;
+package com.flux7.bolts.filewriters;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.flux7.bolts.ScoreFetcherBolt;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -23,7 +25,7 @@ import backtype.storm.tuple.Tuple;
  * @author rsharif
  * 
  */
-public class FileWriterBolt extends BaseRichBolt {
+public class WriterThree extends BaseRichBolt {
 
 	/**
 	 * 
@@ -35,36 +37,22 @@ public class FileWriterBolt extends BaseRichBolt {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ScoreFetcherBolt.class);
 
-	private transient BufferedWriter fileOneWriter;
-	private transient BufferedWriter fileTwoWriter;
-	private transient BufferedWriter fileThreeWriter;
+	private transient BufferedWriter fileWriter;
+
+	private static String FILE_NAME = "fileThree.txt";
 
 	public void prepare(@SuppressWarnings("rawtypes") Map stormConf,
 			TopologyContext context, OutputCollector collector) {
 
-		File fileOne = new File("fileOne.txt");
-		File fileTwo = new File("fileTwo.txt");
-		File fileThree = new File("fileThree.txt");
+		File file = new File(FILE_NAME);
 
 		try {
-			if (!fileOne.exists()) {
-				fileOne.createNewFile();
-			}
-			if (!fileTwo.exists()) {
-				fileTwo.createNewFile();
-			}
-			if (!fileThree.exists()) {
-				fileThree.createNewFile();
+			if (!file.exists()) {
+				file.createNewFile();
 			}
 
-			FileWriter oneWriter = new FileWriter(fileOne.getAbsoluteFile());
-			fileOneWriter = new BufferedWriter(oneWriter);
-
-			FileWriter twoWriter = new FileWriter(fileTwo.getAbsoluteFile());
-			fileTwoWriter = new BufferedWriter(twoWriter);
-
-			FileWriter threeWriter = new FileWriter(fileThree.getAbsoluteFile());
-			fileThreeWriter = new BufferedWriter(threeWriter);
+			FileWriter writer = new FileWriter(file.getAbsoluteFile());
+			fileWriter = new BufferedWriter(writer);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -72,7 +60,6 @@ public class FileWriterBolt extends BaseRichBolt {
 		}
 
 	}
-
 
 	public void execute(Tuple input) {
 		float score = input.getFloat(0);
@@ -84,21 +71,10 @@ public class FileWriterBolt extends BaseRichBolt {
 
 	private void persistScore(float score, String text) {
 		try {
-			if (score < -2) {
-				fileOneWriter.write(score + "\t" + text + "\n");
-				fileOneWriter.flush();
+			fileWriter.write(score + "\t" + text + "\n");
+			fileWriter.flush();
 
-			} else if (score < 2) {
-				fileTwoWriter.write(score + "\t" + text + "\n");
-				fileTwoWriter.flush();
-
-			} else {
-
-				fileThreeWriter.write(score + "\t" + text + "\n");
-				fileThreeWriter.flush();
-			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -36,3 +36,6 @@ nosetests.xml
 .classpath
 *.settings*
 *target*
+fileOne.txt
+fileTwo.txt
+fileThree.txt

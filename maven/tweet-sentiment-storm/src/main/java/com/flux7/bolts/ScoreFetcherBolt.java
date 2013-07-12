@@ -25,6 +25,12 @@ import com.flux7.tweetsentiment.TweetScorer;
  */
 public class ScoreFetcherBolt extends BaseRichBolt {
 
+	public static final String LESS_THAN_TWO = "less-than-two";
+
+	public static final String GREATER_THAN_TWO = "greater-than-two";
+
+	public static final String LESS_THAN_NEGATIVE_2 = "less-than-negative-2";
+
 	/**
 	 * 
 	 */
@@ -53,8 +59,17 @@ public class ScoreFetcherBolt extends BaseRichBolt {
 		if(tweet.length() != 0){
 			try {
 				String tweetText = scorer.getTweetText(tweet);
+				if(tweetText == null)return;
+				
 				float score = scorer.getScore(tweetText);
-				collector.emit(new Values(score,tweetText));
+				if(score < -2 ){
+					collector.emit(LESS_THAN_NEGATIVE_2,new Values(score,tweetText));
+				}else if( score < 2){
+					collector.emit(LESS_THAN_TWO,new Values(score,tweetText));
+				}else{
+					collector.emit(GREATER_THAN_TWO,new Values(score,tweetText));
+				}
+				
 			} catch (ParseException e) {
 				LOGGER.error("Failed to parse tweet {}",tweet);
 			}
@@ -62,8 +77,10 @@ public class ScoreFetcherBolt extends BaseRichBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("score","tweet_text"));
 		
+		declarer.declareStream(LESS_THAN_NEGATIVE_2, new Fields("score","tweetText"));
+		declarer.declareStream(LESS_THAN_TWO, new Fields("score","tweetText"));
+		declarer.declareStream(GREATER_THAN_TWO, new Fields("score","tweetText"));
 	}
 
 }
