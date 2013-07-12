@@ -1,14 +1,14 @@
 package com.flux7;
 
-
-
-  import java.io.BufferedReader;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 import org.json.simple.parser.ParseException;
 
@@ -29,45 +29,51 @@ public class TweetSentimentBasic {
       TweetScorer ts = new TweetScorer(args[1]);
 
       BufferedReader br = new BufferedReader(ttReader);
+      Scanner sc = new Scanner( new File(args[0]));
       File path = new File(args[2]);
       if (!path.exists()) {
 
         path.mkdir();
       }
-      FileWriter f1 = new FileWriter(args[2] + "/score-0.txt");
-      FileWriter f2 = new FileWriter(args[2] + "/score-1.txt");
-      FileWriter f3 = new FileWriter(args[2] + "/score-2.txt");
-
-      BufferedWriter bw1 = new BufferedWriter(f1);
-      BufferedWriter bw2 = new BufferedWriter(f1);
-      BufferedWriter bw3 = new BufferedWriter(f1);
+      
+      
+      
+      PrintWriter p1 = new PrintWriter( new BufferedWriter( new FileWriter(args[2] + "/score-0.txt")));
+      PrintWriter p2 = new PrintWriter( new BufferedWriter( new FileWriter(args[2] + "/score-1.txt")));
+      PrintWriter p3 = new PrintWriter( new BufferedWriter( new FileWriter(args[2] + "/score-2.txt")));
 
       String line;
-      while ((line = br.readLine()) != null) {
-
-        String tweetText = ts.getTweetText(line);
-        if (tweetText != null) {
-          Float score = ts.getScore(tweetText);
-          System.out.println( score + "\t" + tweetText);
-          int cmp1 = score.compareTo(TWEET_LOWER_BOUNDARY_SCORE);
-          if (cmp1 < 0) {
-            bw1.write(score + "\t" + tweetText);
-          } else {
-            int cmp2 = score.compareTo(TWEET_UPPER_BOUNDARY_SCORE);
-            if (cmp2 >= 0) {
-              bw3.write(score + "\t" + tweetText);
-            } else if( (cmp1 >= 0) && (cmp2 < 0 )){
-              bw2.write(score + "\t" + tweetText);
+      while (sc.hasNextLine()) {
+        line = sc.nextLine();
+        System.out.println( "Line: " + line);
+        if (line.length() > 0) {
+          String tweetText = ts.getTweetText(line);
+          if (tweetText != null) {
+            Float score = ts.getScore(tweetText);
+            System.out.println(score + "\t" + tweetText);
+            int cmp1 = score.compareTo(TWEET_LOWER_BOUNDARY_SCORE);
+            if (cmp1 < 0) {
+              p1.println(score + "\t" + tweetText + "\n");
+              
+            } else {
+              int cmp2 = score.compareTo(TWEET_UPPER_BOUNDARY_SCORE);
+              if (cmp2 >= 0) {
+                p3.println(score + "\t" + tweetText + "\n");
+              } else if ((cmp1 >= 0) && (cmp2 < 0) ) {
+                p2.println(score + "\t" + tweetText + "\n");
+              }
             }
           }
+
         }
 
       }
-      
-      bw1.close();
-      bw2.close();
-      bw3.close();
+
+      p1.close();
+      p2.close();
+      p3.close();
       br.close();
+      sc.close();
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -93,6 +99,5 @@ public class TweetSentimentBasic {
     TweetSentimentBasic tsBasic = new TweetSentimentBasic();
     tsBasic.getTweetScores(args);
   }
-
 
 }
