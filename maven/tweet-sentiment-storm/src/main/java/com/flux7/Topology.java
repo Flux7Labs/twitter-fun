@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import backtype.storm.Config;
-import backtype.storm.LocalCluster;
+import backtype.storm.StormSubmitter;
+import backtype.storm.generated.AlreadyAliveException;
+import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 
 import com.flux7.bolts.ScoreFetcherBolt;
@@ -23,6 +25,7 @@ import com.flux7.spouts.TwitterSpout;
  */
 public class Topology {
 	
+	private static final String TWEET_SENTIMENT = "tweet-sentiment";
 	private static final String WRITER_THREE = "writerThree";
 	private static final String WRITER_TWO = "writerTwo";
 	private static final String WRITER_ONE = "writerOne";
@@ -60,8 +63,18 @@ public class Topology {
 		conf.setDebug(true);
 		conf.setNumWorkers(1);
 
-		LocalCluster cluster = new LocalCluster();
-		cluster.submitTopology("twitter", conf, builder.createTopology());
+//		LocalCluster cluster = new LocalCluster();
+//		cluster.submitTopology("twitter", conf, builder.createTopology());
+		
+		try {
+			StormSubmitter.submitTopology(TWEET_SENTIMENT, conf, builder.createTopology());
+		} catch (AlreadyAliveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTopologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		LOGGER.debug("Starting Topology twitter");
 		

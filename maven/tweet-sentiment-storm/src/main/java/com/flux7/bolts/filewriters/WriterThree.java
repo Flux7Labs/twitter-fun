@@ -39,7 +39,7 @@ public class WriterThree extends BaseRichBolt {
 
 	private transient BufferedWriter fileWriter;
 
-	private static String FILE_NAME = "fileThree.txt";
+	private static String FILE_NAME = "/tmp/fileThree.txt";
 
 	public void prepare(@SuppressWarnings("rawtypes") Map stormConf,
 			TopologyContext context, OutputCollector collector) {
