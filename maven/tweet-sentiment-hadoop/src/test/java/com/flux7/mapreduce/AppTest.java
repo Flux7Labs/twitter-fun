@@ -1,4 +1,4 @@
-package $com.flux7.mapreduce;
+package com.flux7.mapreduce;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
